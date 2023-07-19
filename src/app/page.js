@@ -26,8 +26,6 @@ export default function Home() {
 
   console.log('gameOver', gameOver)
 
-  const audio = useMemo(() => new Audio('cantTouchThis.mp3'), [])
-
   // populate the enemies
   useEffect(() => {
     if (enemyDataObjects.length === 0) {
@@ -61,14 +59,9 @@ export default function Home() {
       if (event.clientY > 0 && event.clientY <= 400) {
         setY(event.clientY);
       }
-
-      if (audio.paused) {
-        audio.play()
-      }
-
     }
 
-  }, [audio, gameOver])
+  }, [gameOver])
 
   // game loop interval
 
