@@ -1,0 +1,19 @@
+.character {
+    left: 20px;
+    position: absolute;
+    height: 100px;
+    width: 100px;
+}
+
+.enemy {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+}
+  
+#gameContainer {
+    height: 600px;
+    border: 1px solid black
+}
+
+
