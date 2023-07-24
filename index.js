@@ -11,14 +11,14 @@ let gameOver = false;
 let scoreInterval, gameLoop, enemyInterval
 let level = 1
 
-window.onload = function() {
+window.onload = function () {
     characterImage = document.querySelector("#character")
 }
 
 const loadNewEnemy = (x, y, speedX, id) => {
     const newEnemyData = {
-        x, 
-        y, 
+        x,
+        y,
         speedX,
         id: "enemy" + id
     }
@@ -28,7 +28,7 @@ const loadNewEnemy = (x, y, speedX, id) => {
     newEnemy.id = newEnemyData.id
     newEnemy.style.top = newEnemyData.y + "px"
     newEnemy.style.left = newEnemyData.x + "px"
-    newEnemy.onload = function() {
+    newEnemy.onload = function () {
         document.body.appendChild(newEnemy)
     }
     newEnemy.src = 'assets/zookeeper.gif'
@@ -36,9 +36,9 @@ const loadNewEnemy = (x, y, speedX, id) => {
 
 const loadFirstEnemies = () => {
     for (let i = 0; i < 3; i++) {
-        loadNewEnemy(600, (i+1) * 100, (i + 1) * 10, i)
+        loadNewEnemy(600, (i + 1) * 100, (i + 1) * 10, i)
     }
-    
+
 };
 
 loadFirstEnemies();
@@ -53,10 +53,22 @@ const isColliding = () => {
 
 }
 
+const setupLevel = () => {
+    document.querySelector("#level").textContent = level
+    if(level === 2) {
+        for(let i = 0; i < 4; i++) {
+            loadNewEnemy(999, (i+1) * 100, 30, i)
+        }
+    }
+    if(level === 3) {
+        alert('To be continued...')
+    }
+}
+
 const handleMove = (event) => {
 
     if (!gameOver) {
-        if (event.clientY > 0 && event.clientY <= 800) {
+        if (event.clientY > 0 && event.clientY <= 500) {
             y = event.clientY
             characterImage.style.top = event.clientY + "px"
         }
@@ -91,7 +103,7 @@ const startGame = () => {
             })
             // filter out the enemies off screen
             const filteredEnemyObjects = updatedEnemyObjects.filter((enemy, index) => {
-                if(enemy.x - enemyWidth > -1 * enemyWidth) {
+                if (enemy.x - enemyWidth > -1 * enemyWidth) {
                     return true
                 }
                 document.querySelector("#enemy" + index).remove();
@@ -99,9 +111,16 @@ const startGame = () => {
 
             enemyDataObjects = [...filteredEnemyObjects]
 
-            enemyDataObjects.map((enemyDataObject, index)=> {
-                document.querySelector("#enemy" + index).style.left = enemyDataObject.x + "px"
-            })
+            if (enemyDataObjects.length === 0) {
+                level++
+                setupLevel()
+            }
+            else {
+                enemyDataObjects.map((enemyDataObject, index) => {
+                    document.querySelector("#enemy" + index).style.left = enemyDataObject.x + "px"
+                })
+            }
+
         }, 100);
 
     }
