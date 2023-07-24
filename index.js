@@ -9,31 +9,35 @@ let enemyWidth = 100
 let characterImage;
 let gameOver = false;
 let scoreInterval, gameLoop, enemyInterval
+let level = 1
 
 window.onload = function() {
     characterImage = document.querySelector("#character")
 }
 
-const loadFirstEnemies = () => {
-    let newEnemyObjects = []
-    for (let i = 0; i < 3; i++) {
-        const newEnemyData = {
-            x: 600,
-            y: (i + 1) * 100,
-            speedX: 10 * (i + 1),
-        }
-        newEnemyObjects.push(newEnemyData)
-        const newEnemy = new Image()
-        newEnemy.className = "enemy"
-        newEnemy.id = "enemy" + i
-        newEnemy.style.top = newEnemyData.y + "px"
-        newEnemy.style.left = newEnemyData.x + "px"
-        newEnemy.onload = function() {
-            document.body.appendChild(newEnemy)
-        }
-        newEnemy.src = 'assets/zookeeper.gif'
+const loadNewEnemy = (x, y, speedX, id) => {
+    const newEnemyData = {
+        x, 
+        y, 
+        speedX,
+        id: "enemy" + id
     }
-    enemyDataObjects = [...newEnemyObjects]
+    enemyDataObjects.push(newEnemyData)
+    const newEnemy = new Image()
+    newEnemy.className = "enemy"
+    newEnemy.id = newEnemyData.id
+    newEnemy.style.top = newEnemyData.y + "px"
+    newEnemy.style.left = newEnemyData.x + "px"
+    newEnemy.onload = function() {
+        document.body.appendChild(newEnemy)
+    }
+    newEnemy.src = 'assets/zookeeper.gif'
+}
+
+const loadFirstEnemies = () => {
+    for (let i = 0; i < 3; i++) {
+        loadNewEnemy(600, (i+1) * 100, (i + 1) * 10, i)
+    }
     
 };
 
@@ -41,7 +45,7 @@ loadFirstEnemies();
 
 const isColliding = () => {
     for (const enemyDataObject of enemyDataObjects) {
-        if (enemyDataObject.x >= x && enemyDataObject.x < x + characterWidth && enemyDataObject.y < y + characterHeight && enemyDataObject.y > y) {
+        if (enemyDataObject.x <= x + characterWidth && enemyDataObject.x >= x && enemyDataObject.y <= y + characterHeight && enemyDataObject.y >= y) {
             return true
         }
     }
@@ -52,7 +56,7 @@ const isColliding = () => {
 const handleMove = (event) => {
 
     if (!gameOver) {
-        if (event.clientY > 0 && event.clientY <= 400) {
+        if (event.clientY > 0 && event.clientY <= 800) {
             y = event.clientY
             characterImage.style.top = event.clientY + "px"
         }
@@ -71,7 +75,7 @@ const startGame = () => {
         gameLoop = setInterval(() => {
             if (isColliding()) {
                 gameOver = true
-                document.body.append("Game Over!")
+                alert("Game Over!")
                 clearInterval(gameLoop)
                 clearInterval(scoreInterval)
                 clearInterval(enemyInterval)
