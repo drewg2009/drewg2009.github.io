@@ -17,3 +17,14 @@
     height: 550px;
     border: 1px solid black
 }
+
+#startButton {
+    position: fixed;
+    bottom: 0;
+    font-size: 25px;
+    width: 100%;
+    color: white;
+    background: green;
+    display: block;
+    text-align: center;
+}
