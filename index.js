@@ -3,8 +3,8 @@ let characterY;
 let gameStarted = false;
 let score = 0;
 let enemyDataObjects = []
-let characterWidth = 100;
-let characterHeight = 100;
+let characterWidth = 90;
+let characterHeight = 90;
 let enemyHeight = 75;
 let characterImage;
 let gameOver = false;
@@ -67,13 +67,14 @@ const loadNewEnemy = (x, y, speedX) => {
  * @returns boolean 
  */
 const isColliding = () => {
-    const xBuffer = 20
-    const yBuffer = 50
+    const xBuffer = 30
+    const yBuffer = 20
     for (const enemyDataObject of enemyDataObjects) {
         if (enemyDataObject.x <= characterX + characterWidth - xBuffer
             && enemyDataObject.x >= characterX
-            && ((enemyDataObject.y + enemyHeight >= characterY + yBuffer && enemyDataObject.y + enemyHeight <= characterY + characterHeight - yBuffer)
-            || (enemyDataObject.y <= characterY + characterHeight + yBuffer && enemyDataObject.y >= characterY - yBuffer))) {
+            && ((enemyDataObject.y + enemyHeight >= characterY + yBuffer && enemyDataObject.y + enemyHeight <= characterY + characterHeight)
+                || (enemyDataObject.y <= characterY + characterHeight - yBuffer && enemyDataObject.y >= characterY + yBuffer))
+        ) {
             return true
         }
     }
@@ -105,7 +106,7 @@ const setupLevel = () => {
 }
 
 const handleMove = (event) => {
-    if (!gameOver && event.clientY > 20 && event.clientY <= 500) {
+    if (event.clientY > 20 && event.clientY <= 500) {
         characterY = event.clientY
         characterImage.style.top = characterY + "px"
     }
