@@ -1,10 +1,11 @@
-const x = 20;
-let y;
+const characterX = 20;
+let characterY;
 let gameStarted = false;
 let score = 0;
 let enemyDataObjects = []
 let characterWidth = 100;
 let characterHeight = 100;
+let enemyHeight = 75;
 let characterImage;
 let gameOver = false;
 let gameLoop, enemyInterval
@@ -20,7 +21,7 @@ Creative Commons / Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
  */
 let gameAudio = new Audio('./assets/teknoaxe-stepping-along-the-sky.mp3')
-gameAudio.onended = function() {
+gameAudio.onended = function () {
     this.currentTime = 0;
     this.play()
 }
@@ -50,9 +51,25 @@ const loadNewEnemy = (x, y, speedX) => {
     idForEnemy++
 }
 
+/**
+ * Returns if any enemies are colliding with player
+ * 
+ * We are checking for collisions using bounding boxes of the image tags
+ * 
+ * If the enemy is within the x bounds of the character and either 
+ * colliding from the top or bottom of the character, it's a collision
+ * and we return true. 
+ * 
+ * Otherwise return false.
+ * 
+ * @returns boolean 
+ */
 const isColliding = () => {
     for (const enemyDataObject of enemyDataObjects) {
-        if (enemyDataObject.x <= x + characterWidth && enemyDataObject.x >= x && enemyDataObject.y <= y + characterHeight && enemyDataObject.y >= y) {
+        if (enemyDataObject.x <= characterX + characterWidth
+            && enemyDataObject.x >= characterX
+            && ((enemyDataObject.y + enemyHeight >= characterY && enemyDataObject.y + enemyHeight <= characterY + characterHeight)
+            || (enemyDataObject.y <= characterY + characterHeight && enemyDataObject.y >= characterY))) {
             return true
         }
     }
@@ -66,7 +83,6 @@ function getRandomInt(max) {
 const setupLevel = () => {
     document.querySelector("#level").textContent = level
 
-    let enemyCount;
     if (level < 10) {
         enemyCount = 3
     }
@@ -77,18 +93,17 @@ const setupLevel = () => {
 
     for (let i = 0; i < enemyCount; i++) {
         let speedX = getRandomInt(20) + 5
-        let y = getRandomInt(500) + 20
-        let x = 600
-        loadNewEnemy(x, y, speedX)
+        // let speedX = 10
+        let newEnemyY = getRandomInt(500) + 20
+        let newEnemyX = 600
+        loadNewEnemy(newEnemyX, newEnemyY, speedX)
     }
 }
 
 const handleMove = (event) => {
-    if (!gameOver) {
-        if (event.clientY > 0 && event.clientY <= 500) {
-            y = event.clientY
-            characterImage.style.top = event.clientY + "px"
-        }
+    if (!gameOver && event.clientY > 20 && event.clientY <= 500) {
+        characterY = event.clientY
+        characterImage.style.top = characterY + "px"
     }
 };
 
@@ -118,6 +133,7 @@ const startGame = () => {
         gameStarted = true;
         gameLoop = setInterval(() => {
             if (isColliding()) {
+                console.log("COLLISION")
                 alert('Game over!')
                 resetGame()
                 clearInterval(gameLoop)
@@ -125,7 +141,7 @@ const startGame = () => {
                 gameAudio.pause()
                 gameAudio.currentTime = 0
             }
-        }, 30);
+        }, 34);
 
         enemyInterval = setInterval(() => {
 
@@ -136,9 +152,7 @@ const startGame = () => {
                 }
 
                 let currentEnemy = document.querySelector("#enemy" + enemy.id)
-                // if (currentEnemy) {
                 currentEnemy.remove();
-                // }
             })
 
             enemyDataObjects = [...filteredEnemyObjects]
@@ -156,9 +170,7 @@ const startGame = () => {
             else {
                 enemyDataObjects.map((enemyDataObject, index) => {
                     let currentEnemy = document.querySelector("#enemy" + enemyDataObject.id)
-                    // if (currentEnemy) {
                     currentEnemy.style.left = enemyDataObject.x + "px"
-                    // }
                 })
             }
 
