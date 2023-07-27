@@ -12,6 +12,7 @@ let gameLoop, enemyInterval
 let level = 1
 let idForEnemy = 1;
 let startButton;
+
 /**
  * Audio credit 
  * 
@@ -30,6 +31,7 @@ window.onload = function () {
     characterImage = document.querySelector("#character")
     startButton = document.querySelector("#startButton")
 }
+
 
 const loadNewEnemy = (x, y, speedX) => {
     const newEnemyData = {
@@ -93,12 +95,10 @@ const setupLevel = () => {
     }
     else if (level > 10 && level < 20) {
         enemyCount = getRandomInt(3) + 4
-
     }
 
     for (let i = 0; i < enemyCount; i++) {
         let speedX = getRandomInt(20) + 5
-        // let speedX = 10
         let newEnemyY = getRandomInt(500) + 20
         let newEnemyX = 600
         loadNewEnemy(newEnemyX, newEnemyY, speedX)
@@ -113,7 +113,7 @@ const handleMove = (event) => {
 };
 
 const resetGame = () => {
-    gameOver = true
+    gameOver = false
     gameStarted = false
     score = 0
     level = 1
@@ -128,7 +128,6 @@ const startGame = () => {
     document.querySelector("#level").textContent = setupLevel
     enemyDataObjects = []
     document.querySelectorAll(".enemy").forEach(enemy => enemy.remove())
-    gameOver = false
     startButton.disabled = true
     startButton.className = 'disabledButton'
 
@@ -138,13 +137,14 @@ const startGame = () => {
         gameStarted = true;
         gameLoop = setInterval(() => {
             if (isColliding()) {
-                console.log("COLLISION")
-                alert('Game over!')
-                resetGame()
                 clearInterval(gameLoop)
                 clearInterval(enemyInterval)
                 gameAudio.pause()
                 gameAudio.currentTime = 0
+                $('#myModal').modal('show')
+                $("#gameOverScore").text(score)
+                resetGame()
+
             }
         }, 34);
 
