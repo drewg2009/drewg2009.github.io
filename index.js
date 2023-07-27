@@ -60,16 +60,20 @@ const loadNewEnemy = (x, y, speedX) => {
  * colliding from the top or bottom of the character, it's a collision
  * and we return true. 
  * 
+ * This also includes a buffer because the images have extra margins so it doesn't appear as a collision.
+ * 
  * Otherwise return false.
  * 
  * @returns boolean 
  */
 const isColliding = () => {
+    const xBuffer = 20
+    const yBuffer = 50
     for (const enemyDataObject of enemyDataObjects) {
-        if (enemyDataObject.x <= characterX + characterWidth
+        if (enemyDataObject.x <= characterX + characterWidth - xBuffer
             && enemyDataObject.x >= characterX
-            && ((enemyDataObject.y + enemyHeight >= characterY && enemyDataObject.y + enemyHeight <= characterY + characterHeight)
-            || (enemyDataObject.y <= characterY + characterHeight && enemyDataObject.y >= characterY))) {
+            && ((enemyDataObject.y + enemyHeight >= characterY + yBuffer && enemyDataObject.y + enemyHeight <= characterY + characterHeight - yBuffer)
+            || (enemyDataObject.y <= characterY + characterHeight + yBuffer && enemyDataObject.y >= characterY - yBuffer))) {
             return true
         }
     }
