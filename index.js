@@ -5,15 +5,29 @@ let score = 0;
 let enemyDataObjects = []
 let characterWidth = 100;
 let characterHeight = 100;
-let enemyWidth = 100
 let characterImage;
 let gameOver = false;
 let gameLoop, enemyInterval
 let level = 1
 let idForEnemy = 1;
+let startButton;
+/**
+ * Audio credit 
+ * 
+ * Stepping Along The Sky by TeknoAXE | http://teknoaxe.com
+Music promoted by https://www.free-stock-music.com
+Creative Commons / Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+ */
+let gameAudio = new Audio('./assets/teknoaxe-stepping-along-the-sky.mp3')
+gameAudio.onended = function() {
+    this.currentTime = 0;
+    this.play()
+}
 
 window.onload = function () {
     characterImage = document.querySelector("#character")
+    startButton = document.querySelector("#startButton")
 }
 
 const loadNewEnemy = (x, y, speedX) => {
@@ -52,10 +66,18 @@ function getRandomInt(max) {
 const setupLevel = () => {
     document.querySelector("#level").textContent = level
 
-    let enemyCount = getRandomInt(4) + 2
+    let enemyCount;
+    if (level < 10) {
+        enemyCount = 3
+    }
+    else if (level > 10 && level < 20) {
+        enemyCount = getRandomInt(3) + 4
+
+    }
+
     for (let i = 0; i < enemyCount; i++) {
-        let speedX = getRandomInt(10) + 5
-        let y = getRandomInt(600)
+        let speedX = getRandomInt(20) + 5
+        let y = getRandomInt(500) + 20
         let x = 600
         loadNewEnemy(x, y, speedX)
     }
@@ -68,23 +90,29 @@ const handleMove = (event) => {
             characterImage.style.top = event.clientY + "px"
         }
     }
-
 };
 
 const resetGame = () => {
     gameOver = true
     gameStarted = false
     score = 0
-    level = 0
+    level = 1
+    startButton.disabled = false
+    startButton.className = ''
 }
 
 const startGame = () => {
+
+    gameAudio.play()
+    document.querySelector("#score").textContent = score
+    document.querySelector("#level").textContent = setupLevel
     enemyDataObjects = []
     document.querySelectorAll(".enemy").forEach(enemy => enemy.remove())
     gameOver = false
+    startButton.disabled = true
+    startButton.className = 'disabledButton'
 
     setupLevel()
-
 
     if (!gameStarted) {
         gameStarted = true;
@@ -94,6 +122,8 @@ const startGame = () => {
                 resetGame()
                 clearInterval(gameLoop)
                 clearInterval(enemyInterval)
+                gameAudio.pause()
+                gameAudio.currentTime = 0
             }
         }, 30);
 

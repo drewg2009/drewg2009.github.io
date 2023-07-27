@@ -8,14 +8,18 @@
 
 .enemy {
     position: absolute;
-    height: 100px;
-    width: 100px;
+    height: 75px;
+    width: 75px;
     z-index: 0;
+}
+
+.disabledButton {
+    background: gray;
+    opacity: .5;
 }
   
 #gameContainer {
     height: 550px;
-    border: 1px solid black
 }
 
 #startButton {
