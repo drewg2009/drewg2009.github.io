@@ -30,6 +30,10 @@ gameAudio.onended = function () {
 window.onload = function () {
     characterImage = document.querySelector("#character")
     startButton = document.querySelector("#startButton")
+
+    document.addEventListener('touchmove', function (event) {
+        handleOnTouch(event)
+    }, false)
 }
 
 
@@ -106,11 +110,21 @@ const setupLevel = () => {
 }
 
 const handleMove = (event) => {
-    if (event.clientY > 20 && event.clientY <= 500) {
+    if (characterImage && event.clientY > 20 && event.clientY <= 500) {
         characterY = event.clientY
         characterImage.style.top = characterY + "px"
     }
 };
+
+const handleOnTouch = (event) => {
+    const touches = event.touches
+    for (const touch of touches) {
+        if (characterImage && touch.clientY > 20 && touch.clientY <= 500) {
+            characterY = touch.clientY
+            characterImage.style.top = characterY + "px"
+        }
+    }
+}
 
 const resetGame = () => {
     gameOver = false
@@ -123,7 +137,7 @@ const resetGame = () => {
 
 const startGame = () => {
 
-    gameAudio.play()
+    // gameAudio.play()
     document.querySelector("#score").textContent = score
     document.querySelector("#level").textContent = setupLevel
     enemyDataObjects = []
