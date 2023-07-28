@@ -95,14 +95,14 @@ const setupLevel = () => {
     document.querySelector("#level").textContent = level
 
     if (level < 10) {
-        enemyCount = 3
+        enemyCount = 4
     }
-    else if (level > 10 && level < 20) {
-        enemyCount = getRandomInt(3) + 4
+    else if (level > 10) {
+        enemyCount = getRandomInt(5) + 2
     }
 
     for (let i = 0; i < enemyCount; i++) {
-        let speedX = getRandomInt(20) + 5
+        let speedX = getRandomInt(20) + 10
         let newEnemyY = getRandomInt(500) + 20
         let newEnemyX = 600
         loadNewEnemy(newEnemyX, newEnemyY, speedX)
