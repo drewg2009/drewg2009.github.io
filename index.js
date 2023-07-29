@@ -3,15 +3,18 @@ let characterY;
 let gameStarted = false;
 let score = 0;
 let enemyDataObjects = []
+let powerUps
 let characterWidth = 90;
 let characterHeight = 90;
 let enemyHeight = 75;
 let characterImage;
 let gameOver = false;
-let gameLoop, enemyInterval
+let gameLoop;
 let level = 1
 let idForEnemy = 1;
+let idForPowerup = 1;
 let startButton;
+let gameContainerHeight;
 
 /**
  * Audio credit 
@@ -31,11 +34,32 @@ window.onload = function () {
     characterImage = document.querySelector("#character")
     startButton = document.querySelector("#startButton")
 
+    gameContainerHeight = document.querySelector("#gameContainer").clientHeight + enemyHeight + 20
+
     document.addEventListener('touchmove', function (event) {
+        event.preventDefault()
         handleOnTouch(event)
-    }, false)
+    },  { passive: false })
 }
 
+const loadPowerUp = (x, y, speedX) => {
+    const newPowerUpData = {
+        x,
+        y,
+        speedX,
+        id: idForEnemy
+    }
+    enemyDataObjects.push(newEnemyData)
+    const newEnemy = new Image()
+    newEnemy.className = "enemy"
+    newEnemy.id = "enemy" + idForEnemy
+    newEnemy.style.top = newEnemyData.y + "px"
+    newEnemy.style.left = newEnemyData.x + "px"
+    newEnemy.onload = function () {
+        document.body.appendChild(newEnemy)
+    }
+    newEnemy.src = 'assets/zookeeper.gif'
+}
 
 const loadNewEnemy = (x, y, speedX) => {
     const newEnemyData = {
@@ -51,7 +75,7 @@ const loadNewEnemy = (x, y, speedX) => {
     newEnemy.style.top = newEnemyData.y + "px"
     newEnemy.style.left = newEnemyData.x + "px"
     newEnemy.onload = function () {
-        document.body.appendChild(newEnemy)
+        document.querySelector("#gameContainer").appendChild(newEnemy)
     }
     newEnemy.src = 'assets/zookeeper.gif'
     idForEnemy++
@@ -93,6 +117,7 @@ function getRandomInt(max) {
 
 const setupLevel = () => {
     document.querySelector("#level").textContent = level
+    
 
     if (level < 10) {
         enemyCount = 4
@@ -103,8 +128,9 @@ const setupLevel = () => {
 
     for (let i = 0; i < enemyCount; i++) {
         let speedX = getRandomInt(20) + 10
-        let newEnemyY = getRandomInt(500) + 20
-        let newEnemyX = 600
+        let newEnemyY = getRandomInt(gameContainerHeight - enemyHeight)
+        console.log('newEnemyY', newEnemyY)
+        let newEnemyX = screen.width
         loadNewEnemy(newEnemyX, newEnemyY, speedX)
     }
 }
@@ -135,11 +161,44 @@ const resetGame = () => {
     startButton.className = ''
 }
 
+const filterOffscreenEnemies = () => {
+    // filter out the enemies off screen
+    const filteredEnemyObjects = enemyDataObjects.filter((enemy) => {
+        if (enemy.x > 0) {
+            return true
+        }
+
+        let currentEnemy = document.querySelector("#enemy" + enemy.id)
+        currentEnemy.remove();
+    })
+
+    enemyDataObjects = [...filteredEnemyObjects]
+
+}
+
+function moveEnemies() {
+
+    enemyDataObjects.map(enemyDataObject => {
+        let currentEnemy = document.querySelector("#enemy" + enemyDataObject.id)
+        currentEnemy.style.left = enemyDataObject.x + "px"
+        enemyDataObject.x -= enemyDataObject.speedX
+    })
+
+}
+
+const handleGameOver = () => {
+    clearInterval(gameLoop)
+    gameAudio.pause()
+    gameAudio.currentTime = 0
+    $('#myModal').modal('show')
+    $("#gameOverScore").text(score)
+    resetGame()
+}
+
 const startGame = () => {
 
     // gameAudio.play()
     document.querySelector("#score").textContent = score
-    document.querySelector("#level").textContent = setupLevel
     enemyDataObjects = []
     document.querySelectorAll(".enemy").forEach(enemy => enemy.remove())
     startButton.disabled = true
@@ -149,36 +208,13 @@ const startGame = () => {
 
     if (!gameStarted) {
         gameStarted = true;
+
         gameLoop = setInterval(() => {
             if (isColliding()) {
-                clearInterval(gameLoop)
-                clearInterval(enemyInterval)
-                gameAudio.pause()
-                gameAudio.currentTime = 0
-                $('#myModal').modal('show')
-                $("#gameOverScore").text(score)
-                resetGame()
-
+                handleGameOver()
             }
-        }, 34);
 
-        enemyInterval = setInterval(() => {
-
-            // filter out the enemies off screen
-            const filteredEnemyObjects = enemyDataObjects.filter((enemy) => {
-                if (enemy.x > 0) {
-                    return true
-                }
-
-                let currentEnemy = document.querySelector("#enemy" + enemy.id)
-                currentEnemy.remove();
-            })
-
-            enemyDataObjects = [...filteredEnemyObjects]
-
-            enemyDataObjects.map(enemyDataObject => {
-                enemyDataObject.x -= enemyDataObject.speedX
-            })
+            filterOffscreenEnemies()
 
             if (enemyDataObjects.length === 0) {
                 level++
@@ -187,10 +223,7 @@ const startGame = () => {
                 setupLevel()
             }
             else {
-                enemyDataObjects.map((enemyDataObject, index) => {
-                    let currentEnemy = document.querySelector("#enemy" + enemyDataObject.id)
-                    currentEnemy.style.left = enemyDataObject.x + "px"
-                })
+                moveEnemies()
             }
 
         }, 34);

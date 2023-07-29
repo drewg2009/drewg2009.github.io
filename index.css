@@ -1,3 +1,4 @@
+
 .character {
     left: 20px;
     position: absolute;
@@ -12,7 +13,6 @@
     width: 75px;
     z-index: 0;
 }
-
 .disabledButton {
     background: gray;
     opacity: .5;
@@ -32,3 +32,17 @@
     display: block;
     text-align: center;
 }
+
+@media only screen and (max-width: 768px) {
+    
+    #startButton {
+        position: fixed;
+        bottom: 0;
+        font-size: 50px;
+        width: 100%;
+        color: white;
+        background: blue;
+        display: block;
+        text-align: center;
+    }
+  }
