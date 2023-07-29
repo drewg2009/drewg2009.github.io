@@ -15,6 +15,8 @@ let idForEnemy = 1;
 let idForPowerup = 1;
 let startButton;
 let gameContainerHeight;
+let header;
+let startButtonY;
 
 /**
  * Audio credit 
@@ -33,13 +35,21 @@ gameAudio.onended = function () {
 window.onload = function () {
     characterImage = document.querySelector("#character")
     startButton = document.querySelector("#startButton")
+    header = document.querySelector("#header")
 
-    gameContainerHeight = document.querySelector("#gameContainer").clientHeight + enemyHeight + 20
+    startButtonY = startButton.getBoundingClientRect().top
+
+    gameContainerHeight = window.innerHeight - startButton.clientHeight - header.clientHeight
+
+    document.addEventListener('mousemove', function(event) {
+        handleMove(event)
+    })
 
     document.addEventListener('touchmove', function (event) {
         event.preventDefault()
         handleOnTouch(event)
     },  { passive: false })
+
 }
 
 const loadPowerUp = (x, y, speedX) => {
@@ -115,28 +125,34 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
+function setEnemyCount () {
+    if (level < 10) {
+        enemyCount = 5
+    }
+    else if (level > 5) {
+        enemyCount = getRandomInt(5) + 4
+    }
+    else if(level > 10) {
+        enemyCount = getRandomInt(7) + 5
+    }
+}
+
 const setupLevel = () => {
     document.querySelector("#level").textContent = level
-    
+    document.querySelector("#score").textContent = score
 
-    if (level < 10) {
-        enemyCount = 4
-    }
-    else if (level > 10) {
-        enemyCount = getRandomInt(5) + 2
-    }
+    setEnemyCount()
 
     for (let i = 0; i < enemyCount; i++) {
         let speedX = getRandomInt(20) + 10
-        let newEnemyY = getRandomInt(gameContainerHeight - enemyHeight)
-        console.log('newEnemyY', newEnemyY)
+        let newEnemyY = getRandomInt(gameContainerHeight - enemyHeight) + 50
         let newEnemyX = screen.width
         loadNewEnemy(newEnemyX, newEnemyY, speedX)
     }
 }
 
 const handleMove = (event) => {
-    if (characterImage && event.clientY > 20 && event.clientY <= 500) {
+    if (characterImage && event.clientY > header.clientHeight && event.clientY + characterHeight < startButtonY) {
         characterY = event.clientY
         characterImage.style.top = characterY + "px"
     }
@@ -145,7 +161,7 @@ const handleMove = (event) => {
 const handleOnTouch = (event) => {
     const touches = event.touches
     for (const touch of touches) {
-        if (characterImage && touch.clientY > 20 && touch.clientY <= 500) {
+        if (characterImage && touch.clientY > 20 && touch.clientY + characterHeight <= gameContainerHeight) {
             characterY = touch.clientY
             characterImage.style.top = characterY + "px"
         }
@@ -219,7 +235,6 @@ const startGame = () => {
             if (enemyDataObjects.length === 0) {
                 level++
                 score += 10
-                document.querySelector("#score").textContent = score
                 setupLevel()
             }
             else {

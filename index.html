@@ -40,13 +40,15 @@
     </div>
   </div>
   <div>
-    Score: <span id="score">0</span>
-    <br>
-    Level <span id="level">1</span>
+    <div id="header">
+      Score: <span id="score">0</span>
+      <br>
+      Level <span id="level">1</span>
+    </div>
     <button id="startButton" onclick="startGame()">
       Start!
     </button>
-    <div onMouseMove="handleMove(event)" onTouchMove="handleMove(event)" id="gameContainer">
+    <div id="gameContainer">
       <img id="character" class="character" src="assets/dancing-monkey.gif" />
     </div>
   </div>

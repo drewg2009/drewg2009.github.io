@@ -18,9 +18,6 @@
     opacity: .5;
 }
   
-#gameContainer {
-    height: 550px;
-}
 
 #startButton {
     position: fixed;
