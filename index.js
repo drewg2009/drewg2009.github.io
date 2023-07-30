@@ -41,14 +41,14 @@ window.onload = function () {
 
     gameContainerHeight = window.innerHeight - startButton.clientHeight - header.clientHeight
 
-    document.addEventListener('mousemove', function(event) {
+    document.addEventListener('mousemove', function (event) {
         handleMove(event)
     })
 
     document.addEventListener('touchmove', function (event) {
         event.preventDefault()
         handleOnTouch(event)
-    },  { passive: false })
+    }, { passive: false })
 
 }
 
@@ -125,14 +125,14 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
-function setEnemyCount () {
+function setEnemyCount() {
     if (level < 10) {
         enemyCount = 5
     }
     else if (level > 5) {
         enemyCount = getRandomInt(5) + 4
     }
-    else if(level > 10) {
+    else if (level > 10) {
         enemyCount = getRandomInt(7) + 5
     }
 }
@@ -192,12 +192,28 @@ const filterOffscreenEnemies = () => {
 
 }
 
-function moveEnemies() {
+function diagonalMovementOfEnemy(enemyDataObject, enemyHTML) {
+    if (enemyDataObject.x < window.innerWidth/2) {
+        enemyDataObject.y -= 5
+    }
+    else {
+        enemyDataObject.y += 5
+    }
 
-    enemyDataObjects.map(enemyDataObject => {
-        let currentEnemy = document.querySelector("#enemy" + enemyDataObject.id)
-        currentEnemy.style.left = enemyDataObject.x + "px"
+    enemyHTML.style.top = enemyDataObject.y + "px"
+
+}
+
+function moveEnemies() {
+    enemyDataObjects.map((enemyDataObject,) => {
+        let enemyHTML = document.querySelector("#enemy" + enemyDataObject.id)
         enemyDataObject.x -= enemyDataObject.speedX
+        enemyHTML.style.left = enemyDataObject.x + "px"
+
+        if (level > 5 && level < 15) {
+            diagonalMovementOfEnemy(enemyDataObject, enemyHTML)
+        }
+
     })
 
 }
